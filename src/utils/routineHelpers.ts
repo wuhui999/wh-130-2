@@ -1,6 +1,35 @@
 import { Routine, Move, BreathType, RoutineExportFormat } from '@/types'
 
 const STORAGE_KEY = 'taichi-routines'
+const SEGMENT_STORAGE_KEY = 'taichi-practice-segments'
+
+export interface SegmentSettings {
+  startIndex: number
+  endIndex: number
+  loop: boolean
+}
+
+export function loadSegmentSettings(routineId: string): SegmentSettings | null {
+  try {
+    const data = localStorage.getItem(SEGMENT_STORAGE_KEY)
+    if (!data) return null
+    const all: Record<string, SegmentSettings> = JSON.parse(data)
+    return all[routineId] ?? null
+  } catch {
+    return null
+  }
+}
+
+export function saveSegmentSettings(routineId: string, settings: SegmentSettings): void {
+  try {
+    const data = localStorage.getItem(SEGMENT_STORAGE_KEY)
+    const all: Record<string, SegmentSettings> = data ? JSON.parse(data) : {}
+    all[routineId] = settings
+    localStorage.setItem(SEGMENT_STORAGE_KEY, JSON.stringify(all))
+  } catch {
+    // ignore
+  }
+}
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substring(2, 8)
