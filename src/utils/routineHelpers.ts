@@ -4,8 +4,8 @@ const STORAGE_KEY = 'taichi-routines'
 const SEGMENT_STORAGE_KEY = 'taichi-practice-segments'
 
 export interface SegmentSettings {
-  startIndex: number
-  endIndex: number
+  startMoveId: string
+  endMoveId: string
   loop: boolean
 }
 
@@ -152,10 +152,10 @@ export function importRoutine(json: string): ImportResult {
   const newRoutine: Routine = {
     id: generateId(),
     name: routine.name,
-    moves: importedMoves.map((m) => ({
+    moves: importedMoves.map((m, i) => ({
       id: generateId(),
       name: m.name,
-      order: m.order,
+      order: i + 1,
       duration: m.duration,
       breath: m.breath,
       note: m.note,

@@ -36,9 +36,18 @@ export default function Practice() {
       segmentLoadedRef.current = true
       const saved = loadSegmentSettings(routine.id)
       if (saved) {
-        setSegmentStart(saved.startIndex)
-        setSegmentEnd(saved.endIndex)
-        setLoopSegment(saved.loop)
+        const startIdx = routine.moves.findIndex(m => m.id === saved.startMoveId)
+        const endIdx = routine.moves.findIndex(m => m.id === saved.endMoveId)
+        if (startIdx !== -1 && endIdx !== -1) {
+          const actualStart = Math.min(startIdx, endIdx)
+          const actualEnd = Math.max(startIdx, endIdx)
+          setSegmentStart(actualStart)
+          setSegmentEnd(actualEnd)
+          setLoopSegment(saved.loop)
+        } else {
+          setSegmentStart(0)
+          setSegmentEnd(routine.moves.length - 1)
+        }
       } else {
         setSegmentStart(0)
         setSegmentEnd(routine.moves.length - 1)
@@ -47,10 +56,14 @@ export default function Practice() {
   }, [routine])
 
   const persistSegment = useCallback((start: number, end: number, loop: boolean) => {
-    if (id) {
-      saveSegmentSettings(id, { startIndex: start, endIndex: end, loop })
+    if (id && routine) {
+      saveSegmentSettings(id, {
+        startMoveId: routine.moves[start].id,
+        endMoveId: routine.moves[end].id,
+        loop,
+      })
     }
-  }, [id])
+  }, [id, routine])
 
   const handleSegmentStartChange = useCallback((newStart: number) => {
     const clamped = Math.min(newStart, segmentEnd)

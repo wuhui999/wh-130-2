@@ -88,8 +88,9 @@ export const useRoutineStore = create<RoutineStore>((set, get) => ({
   },
 
   reorderMoves: (routineId: string, moves: Move[]) => {
+    const reordered = moves.map((m, i) => ({ ...m, order: i + 1 }))
     const routines = get().routines.map((r) =>
-      r.id === routineId ? { ...r, moves, updatedAt: Date.now() } : r
+      r.id === routineId ? { ...r, moves: reordered, updatedAt: Date.now() } : r
     )
     saveRoutines(routines)
     set({ routines })
