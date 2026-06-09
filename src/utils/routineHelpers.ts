@@ -70,11 +70,12 @@ export function createMove(name: string, order: number): Move {
 }
 
 export function exportRoutine(routine: Routine): RoutineExportFormat {
+  const sortedMoves = [...routine.moves].sort((a, b) => a.order - b.order)
   return {
     version: '1.0',
     routine: {
       name: routine.name,
-      moves: routine.moves.map((m) => ({
+      moves: sortedMoves.map((m) => ({
         name: m.name,
         order: m.order,
         duration: m.duration,
@@ -138,16 +139,26 @@ export function importRoutine(json: string): ImportResult {
     }
   }
 
-  const newRoutine: Routine = {
-    id: generateId(),
-    name: routine.name,
-    moves: (routine.moves as Array<Record<string, unknown>>).map((m, i) => ({
-      id: generateId(),
+  const importedMoves = (routine.moves as Array<Record<string, unknown>>)
+    .map((m, i) => ({
       name: m.name as string,
-      order: i + 1,
+      order: typeof m.order === 'number' ? m.order : i + 1,
       duration: m.duration as number,
       breath: m.breath as BreathType,
       note: (m.note as string) || '',
+    }))
+    .sort((a, b) => a.order - b.order)
+
+  const newRoutine: Routine = {
+    id: generateId(),
+    name: routine.name,
+    moves: importedMoves.map((m) => ({
+      id: generateId(),
+      name: m.name,
+      order: m.order,
+      duration: m.duration,
+      breath: m.breath,
+      note: m.note,
     })),
     createdAt: Date.now(),
     updatedAt: Date.now(),

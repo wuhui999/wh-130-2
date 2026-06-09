@@ -36,10 +36,8 @@ export default function Practice() {
       segmentLoadedRef.current = true
       const saved = loadSegmentSettings(routine.id)
       if (saved) {
-        const end = Math.min(saved.endIndex, routine.moves.length - 1)
-        const start = Math.min(saved.startIndex, end)
-        setSegmentStart(start)
-        setSegmentEnd(end)
+        setSegmentStart(saved.startIndex)
+        setSegmentEnd(saved.endIndex)
         setLoopSegment(saved.loop)
       } else {
         setSegmentStart(0)
